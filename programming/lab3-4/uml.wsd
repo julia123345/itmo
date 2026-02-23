@@ -1,0 +1,232 @@
+@startuml
+scale max 4000 width
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+package "flowercity.world.interfaces" {
+
+    interface WorldVisitor {
+        +visit(river: River)
+        +visit(city: City)
+        +visit(bridge: Bridge)
+        +visit(road: Road)
+        +visit(hill: Hill)
+        +visit(steamboat: Steamboat)
+    }
+
+    interface Observable {
+        +getDescription(): String
+        +accept(visitor: WorldVisitor)
+    }
+
+    interface Movable {
+        +moveTo(location: FlowerCityLocation)
+    }
+
+    interface WorldLogger {
+        +log(message: String)
+    }
+}
+
+package "flowercity.world.characters" {
+
+    abstract class Character {
+        -name: String
+        -logger: WorldLogger
+        -moodLevel: int
+        +Character(name: String)
+        +setLogger(logger: WorldLogger)
+        +getName(): String
+        +getMoodLevel(): int
+        +adjustMood(delta: int)
+        #getArrivalVerb(): String
+        #logArrival(location: FlowerCityLocation)
+        +equals(o: Object): boolean
+        +hashCode(): int
+        +toString(): String
+    }
+
+    abstract class Traveler {
+        -currentLocation: FlowerCityLocation
+        +moveTo(target: FlowerCityLocation)
+        +getCurrentLocation(): FlowerCityLocation
+    }
+
+    class Button {
+        -hasSeenRealSteamboat: boolean
+        -knowsFromPictures: boolean
+        +Button(name: String, hasSeenRealSteamboat: boolean)
+        +visit(road: Road)
+        +visit(hill: Hill)
+        +visit(river: River)
+        +visit(city: City)
+        +visit(steamboat: Steamboat)
+        +equals(o: Object): boolean
+        +hashCode(): int
+    }
+}
+
+package "flowercity.world.locations" {
+
+    abstract class FlowerCityLocation {
+        -name: String
+        -description: String
+        -weather: Weather
+        +getName(): String
+        +getDescription(): String
+        +getWeather(): Weather
+        +accept(visitor: WorldVisitor)
+        +equals(o: Object): boolean
+        +hashCode(): int
+    }
+
+    class River {
+        -flowSpeed: double
+        +River(name: String, desc: String, flowSpeed: double)
+        +getFlowSpeed(): double
+        +accept(visitor: WorldVisitor)
+    }
+
+    class Road {
+        -isWinding: boolean
+        -landscape: Landscape
+        +Road(name: String, desc: String, isWinding: boolean, landscape: Landscape)
+        +isWinding(): boolean
+        +getLandscape(): Landscape
+        +accept(visitor: WorldVisitor)
+    }
+
+    class Bridge {
+        -length: double
+        +Bridge(name: String, description: String, length: double)
+        +getLength(): double
+        +accept(visitor: WorldVisitor)
+    }
+
+    class City {
+        -population: int
+        +City(name: String, description: String, population: int)
+        +getPopulation(): int
+        +accept(visitor: WorldVisitor)
+    }
+
+    class Hill {
+        -elevation: int
+        +Hill(name: String, desc: String, elevation: int)
+        +getElevation(): int
+        +accept(visitor: WorldVisitor)
+    }
+}
+
+package "flowercity.world.vehicles" {
+
+    abstract class Vehicle {
+        -name: String
+        -currentSpeed: int
+        +getDescription(): String
+        +accept(visitor: WorldVisitor)
+        +getCurrentSpeed(): int
+        +setCurrentSpeed(speed: int)
+    }
+
+    class Steamboat {
+        -hasBigPipe: boolean
+        -isProducingSmoke: boolean
+        -fuelLevel: int
+        -pollutionLevel: double
+        +Steamboat(name: String, hasBigPipe: boolean, initialFuel: int)
+        +setProducingSmoke(smoke: boolean)
+        +consumeFuel()
+        +getDescription(): String
+        +accept(visitor: WorldVisitor)
+    }
+}
+
+package "flowercity.world.records" {
+    class PathDescription <<record>> {
+        +startPoint: String
+        +endPoint: String
+        +distance: double
+        +getInfo(): String
+    }
+}
+
+package "flowercity.world.enums" {
+
+    enum Landscape {
+        HILLS
+        FOREST
+        MIXED
+        +getDescription(): String
+    }
+
+    enum Weather {
+        SUNNY
+        CLOUDY
+        RAINY
+        +getMoodModifier(): int
+        +getDescription(): String
+        +getRandomWeather(): Weather
+    }
+
+    enum Environment {
+        FOREST
+        FIELD
+        HILL
+        RIVER
+        BRIDGE
+        CITY
+        ROAD
+    }
+}
+
+package "flowercity.world.exceptions" {
+
+    class TravelException {
+        +TravelException(message: String)
+        +getMessage(): String
+    }
+
+    class LocationInaccessibleException {
+        +LocationInaccessibleException(message: String)
+        +getMessage(): String
+    }
+
+    class WorldException {
+        +WorldException(message: String)
+        +WorldException(message: String, cause: Throwable)
+    }
+
+    class IllegalStateWorldException {
+        +IllegalStateWorldException(message: String)
+    }
+}
+
+Character <|-- Traveler
+Traveler <|-- Button
+
+FlowerCityLocation <|-- River
+FlowerCityLocation <|-- Road
+FlowerCityLocation <|-- Bridge
+FlowerCityLocation <|-- City
+FlowerCityLocation <|-- Hill
+
+Vehicle <|-- Steamboat
+
+WorldVisitor <|.. Button
+Observable <|.. Vehicle
+Observable <|.. FlowerCityLocation
+
+Exception <|-- TravelException
+TravelException <|-- LocationInaccessibleException
+Exception <|-- WorldException
+RuntimeException <|-- IllegalStateWorldException
+
+Character --> WorldLogger
+Character --> FlowerCityLocation
+Traveler --> FlowerCityLocation
+Road --> Landscape
+FlowerCityLocation --> Weather
+Button ..> Steamboat
+Traveler ..> TravelException
+@enduml
