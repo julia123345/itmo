@@ -9,7 +9,6 @@ import java.nio.channels.SelectionKey;
 
 public abstract class ServerObjectableCommand extends ServerCollectionCommand {
 
-
     public ServerObjectableCommand(Server server,
                                    CollectionManager collectionManager,
                                    String commandName,

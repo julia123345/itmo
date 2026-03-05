@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 /**
- * Аутентификация по файлу users (логин -> хэш пароля). Без БД.
+ * Аутентификация по файлу users (логин -> хэш пароля).
  */
 public class AuthManager {
 

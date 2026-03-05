@@ -3,7 +3,7 @@ package app.server;
 import app.Response;
 import app.ResponseStatus;
 import app.UserRequest;
-import ru.bright.*;
+import app.*;
 import app.managers.AuthManager;
 import app.managers.CollectionManager;
 import app.managers.ServerCommandManager;
@@ -100,7 +100,7 @@ public class Server {
         Thread processThread = new Thread(() -> {
             UserRequest req;
             try {
-                req = future.get();
+                req = future.get();//блокирующий
             } catch (Exception e) {
                 // если не удалось прочитать — отправляем ответ (если ключ валиден)
                 responseToClient(key, new Response(ResponseStatus.ERROR, "Exception: " + e.getMessage()));
@@ -113,7 +113,7 @@ public class Server {
         processThread.start();
     }
 
-    /** Отправка ответа через ForkJoinPool (с проверками) */
+    /** Отправка ответа через ForkJoinPool по ключу */
     public void responseToClient(SelectionKey key, Response response) {
         if (key == null || !key.isValid()) return;
         try {

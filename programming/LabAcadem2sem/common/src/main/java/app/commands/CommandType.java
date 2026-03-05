@@ -22,10 +22,10 @@ public enum CommandType {
     HELP,
     AUTH,
     REGISTER,
-    // Команды из ТЗ, которых не было в enum — добавляю:
     REMOVE_HEAD,
     REMOVE_GREATER,
     AVERAGE_OF_HEIGHT,
     MIN_BY_NAME,
-    PRINT_FIELD_DESCENDING_NATIONALITY
+    PRINT_FIELD_DESCENDING_NATIONALITY,
+    GENERATE_RANDOM
 }

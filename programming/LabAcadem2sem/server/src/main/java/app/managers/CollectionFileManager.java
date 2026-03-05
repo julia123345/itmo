@@ -2,7 +2,7 @@ package app.managers;
 
 import app.model.*;
 import app.server.Server;
-import ru.bright.model.*;
+import app.model.*;
 
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;

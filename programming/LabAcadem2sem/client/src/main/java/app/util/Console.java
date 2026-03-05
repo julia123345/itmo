@@ -3,7 +3,7 @@ package app.util;
 import java.io.IOException;
 
 /**
- * Интерфейс для работы с консолью
+ * Интерфейс для работы с консолью, абстракция ввода-вывода
  */
 public interface Console {
 

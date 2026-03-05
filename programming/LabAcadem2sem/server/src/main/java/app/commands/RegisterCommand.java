@@ -16,21 +16,26 @@ public class RegisterCommand extends ServerCommand {
 
     @Override
     public boolean execute(User user, SelectionKey key, String[] arguments) {
+        // Проверяем, что передано хотя бы 2 аргумента (логин и пароль)
         if(arguments.length < 2) {
-            getServer().sendError(key,"Неверное использование команды.");
+            getServer().sendError(key, "Usage: register <login> <password>");
             return true;
         }
+
         String login = arguments[0];
         String password = arguments[1];
+
         if (getServer().getAuthManager().hasLogin(login)) {
-            getServer().sendError(key, "Login is already busy");
+            getServer().sendError(key, "Login '" + login + "' is already taken.");
             return true;
         }
+
         if (getServer().getAuthManager().register(login, password)) {
-            getServer().sendOK(key, "Register successful.");
+            getServer().sendOK(key, "Registration successful! Now you can 'auth'.");
         } else {
-            getServer().sendError(key, "Registration failed.");
+            getServer().sendError(key, "Internal server error during registration.");
         }
         return true;
     }
+
 }

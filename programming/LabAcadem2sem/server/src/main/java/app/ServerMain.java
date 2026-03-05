@@ -83,6 +83,8 @@ public class ServerMain {
         commandManager.registerCommand(new HelpCommand(server, commandManager));
         commandManager.registerCommand(new RegisterCommand(server));
         commandManager.registerCommand(new AuthCommand(server));
+
+        commandManager.registerCommand(new GenerateRandomCommand(server, collectionManager));
     }
 
     public static Logger getLogger() {

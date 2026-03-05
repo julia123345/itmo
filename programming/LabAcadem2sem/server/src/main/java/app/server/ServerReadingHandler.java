@@ -1,7 +1,7 @@
 package app.server;
 
 import app.UserRequest;
-import ru.bright.*;
+import app.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -10,14 +10,6 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
-/**
- * Модуль чтения запроса (ServerReadingHandler).
- * Возвращает Callable<UserRequest>, который выполняет неблокирующий read
- * и преобразует байты в объект UserRequest (через ObjectInputStream).
- *
- * Важное изменение: при ошибках чтения/разрыве соединения корректно закрываем канал и отменяем ключ,
- * и **никогда** не пытаемся отправлять ответ в уже разорванный канал.
- */
 public class ServerReadingHandler {
 
     private final Server server;
@@ -26,26 +18,30 @@ public class ServerReadingHandler {
         this.server = server;
     }
 
-    protected Callable<UserRequest> handleReading(SelectionKey key) throws IOException {
+    protected Callable<UserRequest> handleReading(SelectionKey key) {
         return () -> {
             SocketChannel clientChannel = (SocketChannel) key.channel();
-            ByteBuffer buffer = ByteBuffer.allocate(100000);
+            ByteBuffer buffer = ByteBuffer.allocate(65536); // 64KB
 
             int bytesRead;
             try {
                 bytesRead = clientChannel.read(buffer);
             } catch (IOException e) {
-                // Клиент разорвал соединение или произошла другая ошибка — корректно закрываем соединение
-                closeConnectionQuietly(key, clientChannel);
-                server.getLogger().log(Level.INFO, "Client connection closed during read: " + e.getMessage());
+                // Клиент разорвал соединение
+                server.getLogger().log(Level.INFO, "Client disconnected: " + e.getMessage());
+                closeConnection(key, clientChannel);
                 return null;
             }
 
             if (bytesRead == -1) {
                 // Клиент закрыл соединение
-                closeConnectionQuietly(key, clientChannel);
-                server.getLogger().log(Level.INFO, "Client closed connection (read returned -1).");
+                server.getLogger().log(Level.INFO, "Client closed connection");
+                closeConnection(key, clientChannel);
                 return null;
+            }
+
+            if (bytesRead == 0) {
+                return null; // Нет данных для чтения
             }
 
             buffer.flip();
@@ -57,29 +53,35 @@ public class ServerReadingHandler {
 
                 Object object = ois.readObject();
                 if (!(object instanceof UserRequest)) {
-                    // Некорректный формат запроса от клиента — отправляем ошибку только если канал валиден.
+                    server.getLogger().log(Level.WARNING, "Wrong request format from client");
                     if (key != null && key.isValid()) {
                         server.sendError(key, "Wrong request format");
                     }
                     return null;
                 }
+
+                server.getLogger().log(Level.INFO, "Received request from client");
                 return (UserRequest) object;
+
             } catch (IOException | ClassNotFoundException e) {
-                // Ошибка десериализации — клиент, возможно, закрылся во время передачи.
-                server.getLogger().log(Level.SEVERE, "Error while deserializing object from client", e);
-                // не пытаемся отвечать, если соединение разорвано — просто закрываем канал
-                closeConnectionQuietly(key, clientChannel);
+                server.getLogger().log(Level.SEVERE, "Error deserializing object", e);
+                // Не закрываем соединение при ошибке десериализации
+                return null;
             }
-            return null;
         };
     }
 
-    private void closeConnectionQuietly(SelectionKey key, SocketChannel channel) {
+    private void closeConnection(SelectionKey key, SocketChannel channel) {
         try {
-            if (key != null) key.cancel();
+            if (key != null) {
+                key.cancel();
+            }
         } catch (Exception ignored) {}
+
         try {
-            if (channel != null && channel.isOpen()) channel.close();
+            if (channel != null && channel.isOpen()) {
+                channel.close();
+            }
         } catch (Exception ignored) {}
     }
 }

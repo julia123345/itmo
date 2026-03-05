@@ -13,11 +13,6 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- * Клиентское приложение.
- * Отвечает за подключение к серверу по неблокирующему {@link SocketChannel},
- * отправку сериализованных команд и приём/обработку ответов.
- */
 public class Client {
 
     private final String host;
@@ -27,197 +22,193 @@ public class Client {
     private ClientCommandManager commandManager;
     private Selector selector;
     private BufferedReader consoleReader;
-    private boolean isAvailable;
-    private String lastCommand;
+    private boolean isConnected;
     private boolean isAuthorized;
     private User user;
+    private long lastReconnectTime = 0;
+    private static final long RECONNECT_DELAY = 3000; // 3 секунды
 
     public Client(Console console, String host, int portNumber) {
         this.portNumber = portNumber;
         this.host = host;
         this.console = console;
-        this.clientChannel = null;
-        this.isAvailable = false;
+        this.isConnected = false;
     }
 
-    public boolean openConnection() throws IOException {
-        selector = null;
+    public boolean openConnection() {
         try {
-            clientChannel = SocketChannel.open();
-            clientChannel.configureBlocking(false);
-            clientChannel.connect(new InetSocketAddress(host, portNumber));
-            selector = Selector.open();
-            clientChannel.register(selector, SelectionKey.OP_CONNECT);
-            isAvailable = true;
-            return true;
-        } catch (Exception e) {
-            console.printErr("Connection error: " + e.getMessage());
             if (selector != null && selector.isOpen()) {
                 selector.close();
             }
-            isAvailable = false;
+            if (clientChannel != null && clientChannel.isOpen()) {
+                clientChannel.close();
+            }
+
+            clientChannel = SocketChannel.open();
+            clientChannel.configureBlocking(false);
+            clientChannel.connect(new InetSocketAddress(host, portNumber));
+
+            selector = Selector.open();
+            clientChannel.register(selector, SelectionKey.OP_CONNECT);
+
+            return true;
+        } catch (IOException e) {
+            console.printErr("Connection error: " + e.getMessage());
             return false;
+        }
+    }
+
+    private void handleConnect(SelectionKey key) throws IOException {
+        SocketChannel channel = (SocketChannel) key.channel();
+        if (channel.isConnectionPending()) {
+            channel.finishConnect();
+        }
+        console.println("Connected to server");
+        channel.register(selector, SelectionKey.OP_READ);
+        isConnected = true;
+    }
+
+    private void readFromServer(SelectionKey key) {
+        SocketChannel ch = (SocketChannel) key.channel();
+        ByteBuffer buffer = ByteBuffer.allocate(8192);
+
+        try {
+            int bytesRead = ch.read(buffer);
+            if (bytesRead == -1) {
+                isConnected = false;
+                key.cancel();
+                ch.close();
+                return;
+            }
+            if (bytesRead == 0) return;
+
+            buffer.flip();
+            byte[] data = new byte[buffer.remaining()];
+            buffer.get(data);
+
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(data);
+                 ObjectInputStream ois = new ObjectInputStream(bais)) {
+
+                Object object = ois.readObject();
+                if (object instanceof Response) {
+                    Response response = (Response) object;
+                    switch (response.getStatus()) {
+                        case OK -> console.println(response.getMessage());
+                        case ERROR -> console.printErr("Server error: " + response.getMessage());
+                        case AUTH_PASSED -> {
+                            console.println(response.getMessage());
+                            isAuthorized = true;
+                        }
+                        case AUTH_FAILED -> {
+                            console.printErr("Auth failed");
+                            isAuthorized = false;
+                        }
+                        default -> console.println(response.getMessage());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            isConnected = false;
+            try { key.cancel(); } catch (Exception ignored) {}
+            try { ch.close(); } catch (Exception ignored) {}
+        } catch (ClassNotFoundException e) {
+            console.printErr("Error reading response");
         }
     }
 
     public void startListening() throws IOException {
         consoleReader = new BufferedReader(new InputStreamReader(System.in));
-        ((BasicConsole)console).setReader(consoleReader);
+        ((BasicConsole) console).setReader(consoleReader);
+
         while (true) {
-            if (consoleReader.ready()) {
+            //Обработка ввода пользователя
+            if (System.in.available() > 0) {
                 String line = consoleReader.readLine();
                 if (line == null) break;
-                if (line.isEmpty()) {
-                    continue;
-                }
-                if (line.equals("exit")) {
-                    consoleReader.close();
+                line = line.trim();
+                if (line.isEmpty()) continue;
+
+                if (line.equalsIgnoreCase("exit")) {
                     System.exit(0);
                 }
-                lastCommand = line;
-                if (!isAvailable) {
-                    openConnection();
+
+                if (!isConnected) {
+                    console.printErr("Not connected to server. Type 'connect' to reconnect");
                     continue;
                 }
-                if (isAuthorized || (line.trim().equalsIgnoreCase("auth") || line.trim().equalsIgnoreCase("register"))) {
-                    if (isAuthorized && (line.trim().equalsIgnoreCase("auth") || line.trim().equalsIgnoreCase("register"))) {
-                        console.println("Вы уже авторизованы");
+
+                String cmdName = line.split("\\s+")[0];
+                boolean isAuthCmd = cmdName.equalsIgnoreCase("auth") ||
+                        cmdName.equalsIgnoreCase("register");
+
+                if (isAuthorized || isAuthCmd) {
+                    if (isAuthorized && isAuthCmd) {
+                        console.println("Already authorized");
                     } else {
                         commandManager.executeCommand(user, line);
                     }
                 } else {
-                    console.printErr("Access error. Enter to system or register. (Commands: auth/register)");
+                    console.printErr("Please login first (auth/register)");
                 }
             }
-            if (!isAvailable) {
-                // немного отдыхаем и пробуем заново
-                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
-                continue;
-            }
-            try {
-                selector.selectNow();
-                Set<SelectionKey> keys = selector.selectedKeys();
-                Iterator<SelectionKey> iterator = keys.iterator();
-                while (iterator.hasNext()) {
-                    SelectionKey selectionKey = iterator.next();
-                    iterator.remove();
-                    if (!selectionKey.isValid()) continue;
-                    if (selectionKey.isConnectable()) {
-                        SocketChannel channel = (SocketChannel) selectionKey.channel();
-                        if (channel.isConnectionPending()) {
-                            channel.finishConnect();
-                        }
-                        console.println("Connected to " + channel.getRemoteAddress());
-                        console.println("You can enter to system or register (Commands: auth/register)");
-                        channel.register(selector, SelectionKey.OP_READ);
-                        if (isAuthorized && lastCommand != null && !lastCommand.isEmpty()) {
-                            commandManager.executeCommand(user, lastCommand);
-                        }
-                    }
-                    if (selectionKey.isReadable()) {
-                        readFromServer(selectionKey);
-                    }
-                }
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            } catch (Exception e) {
-                console.printErr("Сервер временно недоступен. Попробуйте позже");
-                if (selector != null) try { selector.close(); } catch (IOException ignored) {}
-                isAvailable = false;
-            }
-        }
-    }
 
-    private ResponseStatus readFromServer(SelectionKey key) throws IOException {
-        SocketChannel ch = (SocketChannel) key.channel();
-        ResponseStatus status = null;
-        ByteBuffer buffer = ByteBuffer.allocate(8192);
-        int bytesRead;
-        try {
-            bytesRead = ch.read(buffer);
-        } catch (IOException e) {
-            isAvailable = false;
-            key.cancel();
-            try { ch.close(); } catch (IOException ignored) {}
-            return null;
-        }
-        if (bytesRead == -1) {
-            isAvailable = false;
-            key.cancel();
-            try { ch.close(); } catch (IOException ignored) {}
-            return null;
-        }
-        buffer.flip();
-        byte[] data = new byte[buffer.remaining()];
-        buffer.get(data);
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
-            while (bais.available() > 0) {
-                try (ObjectInputStream ois = new ObjectInputStream(bais)) {
-                    Object object = ois.readObject();
-                    if (!(object instanceof Response)) continue;
-                    Response response = (Response) object;
-                    status = response.getStatus();
-                    if (response.getStatus() == ResponseStatus.OK) {
-                        console.println(response.getMessage());
-                    } else if (response.getStatus() == ResponseStatus.ERROR) {
-                        console.printErr("Server error: " + response.getMessage());
-                    } else if (response.getStatus() == ResponseStatus.DENIED) {
-                        console.printErr("Command denied: " + response.getMessage());
-                    } else if (status == ResponseStatus.AUTH_PASSED) {
-                        if (response.getMessage() != null) {
-                            console.println(response.getMessage());
-                        }
-                        isAuthorized = true;
-                    } else if (status == ResponseStatus.AUTH_FAILED) {
-                        console.printErr("Access error. Enter to system or register. (Commands: auth/register)");
-                        isAuthorized = false;
-                    }
-                } catch (EOFException e) {
-                    break;
-                } catch (IOException | ClassNotFoundException e) {
-                    console.printErr("Error while reading response: " + e.getMessage());
-                    break;
+            long now = System.currentTimeMillis();
+            if (!isConnected && now - lastReconnectTime > RECONNECT_DELAY) {
+                lastReconnectTime = now;
+                if (openConnection()) {
+                    // console.println("Reconnecting...");
                 }
             }
-        } catch (IOException e) {
-            console.printErr("Error while reading response: " + e.getMessage());
+
+            // Обработка сетевых событий
+            if (selector != null && selector.isOpen()) {
+                try {
+                    if (selector.selectNow() > 0) {
+                        Set<SelectionKey> keys = selector.selectedKeys();
+                        Iterator<SelectionKey> iterator = keys.iterator();
+                        while (iterator.hasNext()) {
+                            SelectionKey key = iterator.next();
+                            iterator.remove();
+
+                            if (!key.isValid()) continue;
+
+                            if (key.isConnectable()) {
+                                handleConnect(key);
+                            }
+                            if (key.isReadable()) {
+                                readFromServer(key);
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    isConnected = false;
+                }
+            }
+
+            try { Thread.sleep(50); } catch (InterruptedException ignored) {}
         }
-        buffer.clear();
-        return status;
     }
 
     public void requestToServer(UserRequest request) throws IOException {
-        if (clientChannel == null || !clientChannel.isOpen()) throw new IOException("Client channel is closed");
+        if (clientChannel == null || !clientChannel.isOpen() || !isConnected) {
+            throw new IOException("Not connected to server");
+        }
+
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(out)) {
+
             oos.writeObject(request);
             byte[] data = out.toByteArray();
             ByteBuffer buf = ByteBuffer.wrap(data);
+
             while (buf.hasRemaining()) {
                 clientChannel.write(buf);
             }
-        } catch (Exception e) {
-            console.printErr("Error while writing request: " + e.getMessage());
-            throw new IOException(e);
         }
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public Console getConsole() {
-        return console;
-    }
-
-    public void setCommandManager(ClientCommandManager clientCommandManager) {
-        this.commandManager = clientCommandManager;
-    }
+    public void setUser(User user) { this.user = user; }
+    public User getUser() { return user; }
+    public Console getConsole() { return console; }
+    public void setCommandManager(ClientCommandManager manager) { this.commandManager = manager; }
 }

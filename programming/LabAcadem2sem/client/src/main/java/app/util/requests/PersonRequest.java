@@ -1,7 +1,7 @@
 package app.util.requests;
 
 import app.model.*;
-import ru.bright.model.*;
+import app.model.*;
 import app.util.Console;
 
 import java.io.IOException;

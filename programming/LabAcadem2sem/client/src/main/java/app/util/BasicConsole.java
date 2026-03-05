@@ -11,9 +11,7 @@ public class BasicConsole implements Console {
 
     private BufferedReader reader;
 
-    public BasicConsole() {
-
-    }
+    public BasicConsole() {}
 
     /**
      * Устанавливает BufferedReader для консоли
@@ -42,5 +40,4 @@ public class BasicConsole implements Console {
     public String readLine() throws IOException {
         return reader.readLine();
     }
-
 }

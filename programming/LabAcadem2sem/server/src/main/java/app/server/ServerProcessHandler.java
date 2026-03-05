@@ -4,49 +4,41 @@ import app.Response;
 import app.ResponseStatus;
 import app.User;
 import app.UserRequest;
-import app.commands.Command;
-import app.commands.CommandType;
-import app.commands.types.ServerObjectableCommand;
-
 import java.nio.channels.SelectionKey;
 
 public class ServerProcessHandler {
-
     private Server server;
 
     public ServerProcessHandler(Server server) {
         this.server = server;
     }
 
-    protected void handleRequest(SelectionKey key, UserRequest request)  {
+    protected void handleRequest(SelectionKey key, UserRequest request) {
+        String commandLine = request.getCommandLine().trim();
+        String commandName = commandLine.split("\\s+")[0].toLowerCase();
+
+        // 1. Проверка: является ли команда регистрацией или логином
+        boolean isAuthCommand = commandName.equals("auth") || commandName.equals("register");
+
+        // 2. Достаем пользователя либо из запроса, либо из аттачмента ключа (сессии)
         User user = request.getUser();
-        if (!(request.getCommandLine().trim().equalsIgnoreCase("auth") ||
-                request.getCommandLine().trim().equalsIgnoreCase("register"))) {
-            if (user != null && !server.getAuthManager().verify(user.getLogin(), user.getPassword())) {
-                server.responseToClient(key, new Response(ResponseStatus.AUTH_FAILED, null));
+        if (user == null && key.attachment() instanceof User) {
+            user = (User) key.attachment();
+        }
+
+        if (!isAuthCommand) {
+            // Для всех остальных команд проверяем валидность пользователя
+            if (user == null || !server.getAuthManager().verify(user.getLogin(), user.getPassword())) {
+                server.responseToClient(key, new Response(ResponseStatus.AUTH_FAILED, "Требуется авторизация или неверные данные."));
                 return;
             }
         }
 
+        // 3. Выполнение команды (логика остается прежней)
         if (request.getAttachedObject() == null) {
-            server.getServerCommandManager().executeCommand(user, key, request.getCommandLine());
+            server.getServerCommandManager().executeCommand(user, key, commandLine);
         } else {
-            String cmdName = request.getCommandLine().split(" ")[0];
-            CommandType type;
-            try {
-                type = CommandType.valueOf(cmdName.toUpperCase());
-            } catch (Exception e) {
-                server.responseToClient(key, new Response(ResponseStatus.ERROR, "Wrong command"));
-                return;
-            }
-            if (!server.getServerCommandManager().getCommandMap().containsKey(type)) {
-                server.responseToClient(key, new Response(ResponseStatus.ERROR, "Wrong command"));
-                return;
-            }
-            Command cmd = server.getServerCommandManager().getCommandMap().get(type);
-            if (cmd instanceof ServerObjectableCommand) {
-                server.getServerCommandManager().executeObjectableCommand(user, key, request.getCommandLine(), request.getAttachedObject());
-            }
+            server.getServerCommandManager().executeObjectableCommand(user, key, commandLine, request.getAttachedObject());
         }
     }
 }

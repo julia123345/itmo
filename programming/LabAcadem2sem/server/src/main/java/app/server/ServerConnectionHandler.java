@@ -1,8 +1,8 @@
 package app.server;
 
-import app.ServerMain;
 import app.Response;
 import app.ResponseStatus;
+import app.ServerMain;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -23,10 +23,14 @@ public class ServerConnectionHandler {
         SocketChannel clientChannel = serverChannel.accept();
         if(clientChannel != null) {
             clientChannel.configureBlocking(false);
-            clientChannel.register(selector, SelectionKey.OP_READ);
+            // Регистрируем канал для чтения
+            SelectionKey clientKey = clientChannel.register(selector, SelectionKey.OP_READ);
+
+            // Отправляем подтверждение
             Response response = new Response(ResponseStatus.OK, "Connection accepted");
-            server.responseToClient(key, clientChannel, response);
-            ServerMain.getLogger().log(Level.INFO,"Connection accepted");
+            server.responseToClient(clientKey, response);
+
+            server.getLogger().log(Level.INFO, "Connection accepted from " + clientChannel.getRemoteAddress());
         }
     }
 }
