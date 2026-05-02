@@ -1,0 +1,14 @@
+app\ResponseStatus.class
+app\commands\Command.class
+app\commands\CommandManager.class
+app\commands\CommandType.class
+app\model\Country.class
+app\model\Location.class
+app\model\HairColor.class
+app\Request.class
+app\model\Person.class
+app\model\EyeColor.class
+app\User.class
+app\Response.class
+app\UserRequest.class
+app\model\Coordinates.class
