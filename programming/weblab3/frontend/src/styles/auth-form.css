@@ -1,0 +1,89 @@
+:host {
+  display: block;
+}
+
+.card {
+  background: #0f1c3d;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(60, 90, 160, 0.25);
+  width: 320px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  text-align: center;
+  color: #ffffff;
+}
+
+input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  background: #0a1630;
+  color: #e9eefb;
+  border: 1px solid #2a3b6d;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #5c7cff;
+  box-shadow: 0 0 0 2px rgba(92,124,255,0.3);
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  background: #1e3a8a;          /* тёмно-синий фон */
+  border: 1px solid #7fb3ff;    /* светлая граница */
+  color: #ffffff;
+
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #254edb;
+  border-color: #a5c8ff;
+}
+
+button.alt {
+  background: transparent;
+  border: 1px solid #5c7cff;
+  color: #5c7cff;
+}
+
+button.alt:hover {
+  background: rgba(92,124,255,0.1);
+}
+
+.status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #9fb3ff;
+  min-height: 18px;
+  text-align: center;
+}
+
+.error {
+  margin-top: 6px;
+  color: #ff6b81;
+  min-height: 18px;
+  font-size: 13px;
+  text-align: center;
+}

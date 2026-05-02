@@ -1,0 +1,30 @@
+embed-server --std-out=echo
+
+# Сначала добавляем модуль
+module add --name=com.mysql --resources=/tmp/mysql.jar --dependencies=javax.api,javax.transaction.api
+
+# Ждем немного
+sleep 1
+
+# Добавляем драйвер
+/subsystem=datasources/jdbc-driver=mysql:add(driver-name="mysql",driver-module-name="com.mysql",driver-class-name=com.mysql.cj.jdbc.Driver)
+
+# Ждем немного
+sleep 1
+
+# Добавляем datasource с использованием переменных окружения
+/subsystem=datasources/data-source=CoordinatesDS:add(
+    jndi-name="java:/CoordinatesDS",
+    enabled=true,
+    use-java-context=true,
+    connection-url="jdbc:mysql://${env.DB_HOST:mysql}:${env.DB_PORT:3306}/${env.DB_NAME:coordinates_db}?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+    driver-name="mysql",
+    user-name="${env.DB_USER:appuser}",
+    password="${env.DB_PASSWORD:password}",
+    validate-on-match=true,
+    background-validation=false,
+    background-validation-millis=10000,
+    idle-timeout-minutes=5
+)
+
+stop-embedded-server

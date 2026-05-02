@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group = 'myapp'
+version = '1.0'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ВСЕ Jakarta EE API - только для компиляции
+    compileOnly 'jakarta.platform:jakarta.jakartaee-api:10.0.0'
+    compileOnly 'jakarta.jws:jakarta.jws-api:3.0.0'
+    compileOnly 'jakarta.xml.ws:jakarta.xml.ws-api:4.0.0'
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    compileOnly 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
+    compileOnly 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    compileOnly 'jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.0'
+    compileOnly 'jakarta.transaction:jakarta.transaction-api:2.0.0'
+    compileOnly 'jakarta.ejb:jakarta.ejb-api:4.0.1'
+    compileOnly 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+
+    // ДОБАВЛЕНО: JWT зависимости
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    implementation 'org.mindrot:jbcrypt:0.4'
+    runtimeOnly 'com.mysql:mysql-connector-j:8.3.0'
+    runtimeOnly 'org.hibernate.orm:hibernate-core:6.2.25.Final'
+}
+
+war {
+    archiveFileName = 'backend.war'
+    exclude '**/protobuf*.jar'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-parameters']
+}
+
+// Проверка содержимого WAR
+task checkWarContents {
+    doLast {
+        println "Проверка содержимого WAR..."
+        def warFile = file("${buildDir}/libs/backend.war")
+        if (warFile.exists()) {
+            java.util.jar.JarFile jar = new java.util.jar.JarFile(warFile)
+            jar.entries().each { entry ->
+                if (entry.name.endsWith('.jar')) {
+                    println "  В WAR найден JAR: ${entry.name}"
+                }
+            }
+            jar.close()
+        }
+    }
+}
+
+war.finalizedBy checkWarContents

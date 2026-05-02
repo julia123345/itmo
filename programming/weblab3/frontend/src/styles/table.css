@@ -1,0 +1,31 @@
+ points-table,
+ check-result {
+     display: block;
+ }
+
+ table {
+     width: 100%;
+     border-collapse: collapse;
+     background: #0f1b3d;
+     border: 2px solid #3f6edb;
+ }
+
+ th, td {
+     border: 1px solid #4f7eff;
+     padding: 10px;
+     text-align: center;
+ }
+
+ th {
+     background: #1c2d5a;
+     color: #7fb3ff;
+     font-weight: 600;
+ }
+
+ tr:nth-child(even) {
+     background: #162450;
+ }
+
+ tr:hover {
+     background: #20306b;
+ }

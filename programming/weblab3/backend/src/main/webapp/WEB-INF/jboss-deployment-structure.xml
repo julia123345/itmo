@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+  <deployment>
+    <!-- Не даём WildFly бутстрапить JPA — свой EMF через Hibernate и MySQL в WAR -->
+    <exclude-subsystems>
+      <subsystem name="jpa"/>
+    </exclude-subsystems>
+  </deployment>
+</jboss-deployment-structure>

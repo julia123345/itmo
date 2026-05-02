@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>WebLab4 — Geometry</title>
+    <link rel="stylesheet" href="/src/styles/table.css">
+    <link rel="stylesheet" href="/src/styles/global.css">
+    <link rel="stylesheet" href="/src/styles/layout.css">
+</head>
+<body>
+<main class="container">
+
+    <header class="topbar">
+        <h1>Проверка попадания точки</h1>
+        <div id="top-controls"></div>
+    </header>
+
+    <!-- Верхний блок: форма + результат -->
+    <section class="content">
+        <div class="left">
+            <point-form></point-form>
+        </div>
+
+        <div class="right">
+            <check-result></check-result>
+        </div>
+    </section>
+
+    <!-- График -->
+    <section class="graph-section">
+        <area-graph></area-graph>
+    </section>
+
+    <!-- 🔥 Таблица теперь внизу -->
+    <section class="table-section">
+        <points-table></points-table>
+    </section>
+
+</main>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

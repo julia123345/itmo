@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Web Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script type="module" crossorigin src="/assets/index-wn5KHRye.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-U7YBYMDL.css">
+</head>
+<body>
+<main style="max-width: 980px; margin: 0 auto; padding: 24px; font-family: system-ui, sans-serif;">
+
+    <!-- 🔐 LOGIN PAGE -->
+    <section id="login-page">
+        <h2>Авторизация</h2>
+        <auth-form></auth-form>
+    </section>
+
+    <!-- 📐 GEOMETRY PAGE -->
+    <section id="geometry-page" style="display:none;">
+        <h2>Проверка точки</h2>
+        <button onclick="logout()" style="margin-bottom:16px;">Выйти</button>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <point-form></point-form>
+            <check-result></check-result>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const loginPage = document.getElementById('login-page');
+    const geometryPage = document.getElementById('geometry-page');
+
+    function showLogin() {
+        loginPage.style.display = "block";
+        geometryPage.style.display = "none";
+    }
+
+    function showGeometry() {
+        loginPage.style.display = "none";
+        geometryPage.style.display = "block";
+    }
+
+    function logout() {
+        localStorage.removeItem("token");
+        showLogin();
+    }
+
+    // Проверяем токен при загрузке
+    window.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            showGeometry();
+        } else {
+            showLogin();
+        }
+    });
+
+    // Глобальный вызов после логина
+    window.onLoginSuccess = function() {
+        showGeometry();
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+:host {
+  display: block;
+}
+
+.card {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--card, #0f1c3d);
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+canvas {
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: linear-gradient(#04102a,#081635);
+}
+
+.controls {
+  margin-bottom: 12px;
+}
+
+label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: white;
+}
+
+input {
+  width: 80px;
+  padding: 6px;
+  border-radius: 6px;
+  background: #0f1c3d;
+  color: white;
+  border: 1px solid #2a3b6d;
+  text-align: center;
+}
