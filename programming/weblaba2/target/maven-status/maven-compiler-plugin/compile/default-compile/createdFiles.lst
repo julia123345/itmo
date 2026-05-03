@@ -1,0 +1,4 @@
+serverapp\ValidationFilter.class
+serverapp\ControllerServlet.class
+serverapp\PointResult.class
+serverapp\AreaCheckServlet.class

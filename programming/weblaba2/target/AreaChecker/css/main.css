@@ -1,0 +1,159 @@
+/* Основные стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Шапка */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+}
+
+header h1 {
+    color: #333;
+    margin: 0;
+}
+
+header p {
+    color: #666;
+    margin: 5px 0 0 0;
+}
+
+/* Секции */
+.form-section {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.form-section h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+/* Выбор R */
+.r-selector {
+    margin: 15px 0;
+}
+
+.r-option {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px 20px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    cursor: pointer;
+    background: white;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.r-option:hover {
+    background: #e7f3ff;
+}
+
+.r-option.selected {
+    background: #007bff;
+    color: white;
+}
+
+#currentR {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Canvas */
+.canvas-section {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#areaCanvas {
+    border: 2px solid #333;
+    border-radius: 5px;
+    background: white;
+    cursor: crosshair;
+}
+
+.canvas-section p {
+    margin-top: 10px;
+    color: #666;
+}
+
+/* Таблица результатов */
+.results-section {
+    margin: 30px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.results-section h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+th {
+    background: #007bff;
+    color: white;
+    padding: 12px;
+    text-align: center;
+}
+
+td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.hit {
+    color: green;
+    font-weight: bold;
+}
+
+.miss {
+    color: red;
+    font-weight: bold;
+}
+
+/* Сообщение когда нет результатов */
+.results-section p {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+}
+
+.recalculated-hit {
+    font-style: italic;
+    color: #666;
+}
