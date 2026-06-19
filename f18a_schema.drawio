@@ -1,0 +1,311 @@
+<mxfile host="app.diagrams.net" agent="Claude" version="24.0.0">
+  <diagram name="F18A Processor Schema" id="f18a-schema">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE -->
+        <mxCell id="title" value="&lt;b style=&quot;font-size:18px;&quot;&gt;GreenArrays F18A — 18-битное стековое ядро (Forth-in-silicon)&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="430" y="20" width="700" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- MEMORY -->
+        <mxCell id="memory" value="&lt;b&gt;MEMORY&lt;/b&gt;&lt;br&gt;RAM 64×18  ·  ROM 64×18&lt;br&gt;I/O &amp;amp; межузловые порты&lt;br&gt;&lt;font color=&quot;#555555&quot;&gt;слово = 18 бит · 9-битная адресация&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="460" y="70" width="520" height="96" as="geometry" />
+        </mxCell>
+
+        <!-- CONTROL UNIT -->
+        <mxCell id="cu" value="&lt;b&gt;CONTROL UNIT&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font color=&quot;#555555&quot;&gt;слот-секвенсор (4 слота)&lt;br&gt;декодер опкодов (5 бит)&lt;br&gt;логика P9 / EAM&lt;br&gt;асинхронный, без такта&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="250" width="210" height="540" as="geometry" />
+        </mxCell>
+
+        <!-- P (PC) -->
+        <mxCell id="pc" value="&lt;b&gt;P (PC)&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;9 бит · P9 = EAM&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="250" width="130" height="58" as="geometry" />
+        </mxCell>
+
+        <!-- +1 incrementer -->
+        <mxCell id="inc" value="&lt;b&gt;+1&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="270" y="251" width="56" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- IR (instruction word) -->
+        <mxCell id="ir" value="&lt;b&gt;I — слово инструкции (18 бит)&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="460" y="240" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="slot0" value="slot0&lt;br&gt;5 бит" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef6ed;strokeColor=#82b366;fontSize=9;" vertex="1" parent="ir">
+          <mxGeometry x="12" y="38" width="68" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="slot1" value="slot1&lt;br&gt;5 бит" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef6ed;strokeColor=#82b366;fontSize=9;" vertex="1" parent="ir">
+          <mxGeometry x="84" y="38" width="68" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="slot2" value="slot2&lt;br&gt;5 бит" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef6ed;strokeColor=#82b366;fontSize=9;" vertex="1" parent="ir">
+          <mxGeometry x="156" y="38" width="68" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="slot3" value="slot3&lt;br&gt;3 бита" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef6ed;strokeColor=#82b366;fontSize=9;" vertex="1" parent="ir">
+          <mxGeometry x="228" y="38" width="80" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- A / B registers -->
+        <mxCell id="rega" value="&lt;b&gt;A&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;адрес/данные · ++&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="430" width="130" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="regb" value="&lt;b&gt;B&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;адрес · только запись&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="510" width="130" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- MUX Addr -->
+        <mxCell id="addr_mux" value="&lt;b&gt;MUX Addr&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;источник адреса:&lt;br&gt;P · A · B&lt;/font&gt;" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;direction=north;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="80" y="600" width="200" height="96" as="geometry" />
+        </mxCell>
+
+        <!-- DATA STACK -->
+        <mxCell id="data_stack" value="&lt;b&gt;DATA STACK&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="500" y="600" width="210" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="cellT" value="&lt;b&gt;T&lt;/b&gt; (вершина)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f2ecf6;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="data_stack">
+          <mxGeometry x="16" y="34" width="178" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cellS" value="&lt;b&gt;S&lt;/b&gt; (второй)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f2ecf6;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="data_stack">
+          <mxGeometry x="16" y="68" width="178" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ds_note" value="&lt;font color=&quot;#666666&quot; style=&quot;font-size:10px;&quot;&gt;+ 8 регистров (циклический указатель)&lt;br&gt;всего 10 элементов&lt;/font&gt;" style="text;html=1;align=center;whiteSpace=wrap;" vertex="1" parent="data_stack">
+          <mxGeometry x="10" y="106" width="190" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- RETURN STACK -->
+        <mxCell id="return_stack" value="&lt;b&gt;RETURN STACK&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="80" y="730" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="cellR" value="&lt;b&gt;R&lt;/b&gt; (вершина / счётчик)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f2ecf6;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="return_stack">
+          <mxGeometry x="14" y="34" width="172" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="rs_note" value="&lt;font color=&quot;#666666&quot; style=&quot;font-size:10px;&quot;&gt;+ 8 регистров (циклический)&lt;br&gt;всего 9 элементов&lt;br&gt;next/unext: декремент R до 0&lt;/font&gt;" style="text;html=1;align=center;whiteSpace=wrap;" vertex="1" parent="return_stack">
+          <mxGeometry x="8" y="70" width="184" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- ALU -->
+        <mxCell id="alu" value="&lt;b style=&quot;font-size:15px;&quot;&gt;ALU&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;18 бит&lt;/font&gt;" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;direction=west;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="800" y="610" width="250" height="170" as="geometry" />
+        </mxCell>
+
+        <!-- Carry / EAM latch -->
+        <mxCell id="carry" value="&lt;b&gt;Carry latch&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;EAM = бит P9&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="548" width="160" height="46" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== DATA BUSES (blue) ===================== -->
+        <mxCell id="e_addr_bus" value="address bus" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f5fa8;strokeWidth=3;fontSize=10;fontStyle=1;fontColor=#1f5fa8;exitX=0;exitY=0.5;entryX=0;entryY=0.5;endArrow=block;" edge="1" parent="1" source="addr_mux" target="memory">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="40" y="648" />
+              <mxPoint x="40" y="118" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_fetch" value="fetch (mem[P]→I)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f5fa8;strokeWidth=3;fontSize=10;fontStyle=1;fontColor=#1f5fa8;exitX=0.31;exitY=1;entryX=0.5;entryY=0;endArrow=block;" edge="1" parent="1" source="memory" target="ir">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dataread" value="data read (@ / @p)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f5fa8;strokeWidth=3;fontSize=10;fontStyle=1;fontColor=#1f5fa8;exitX=0.7;exitY=1;entryX=0.7;entryY=0;endArrow=block;" edge="1" parent="1" source="memory" target="data_stack">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="824" y="200" />
+              <mxPoint x="824" y="588" />
+              <mxPoint x="647" y="588" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_datawrite" value="data write (!)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1f5fa8;strokeWidth=3;fontSize=10;fontStyle=1;fontColor=#1f5fa8;exitX=0.5;exitY=0;entryX=0.9;entryY=1;endArrow=block;" edge="1" parent="1" source="alu" target="memory">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="925" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===================== DATA PATHS (dark) ===================== -->
+        <mxCell id="e_p_inc1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.8;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="pc" target="inc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p_inc2" value="auto-inc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.8;endArrow=block;fontSize=9;exitX=0.5;exitY=0;entryX=0.75;entryY=0;" edge="1" parent="1" source="inc" target="pc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="298" y="228" />
+              <mxPoint x="177" y="228" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_p_mux" value="P" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=0.5;exitY=1;entryX=0.25;entryY=0;" edge="1" parent="1" source="pc" target="addr_mux">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a_mux" value="A" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=0;exitY=0.5;entryX=0.55;entryY=0;" edge="1" parent="1" source="rega" target="addr_mux">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="250" y="456" />
+              <mxPoint x="250" y="588" />
+              <mxPoint x="190" y="588" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_b_mux" value="B" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=0;exitY=0.5;entryX=0.75;entryY=0;" edge="1" parent="1" source="regb" target="addr_mux">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="266" y="536" />
+              <mxPoint x="266" y="592" />
+              <mxPoint x="210" y="592" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ir_cu" value="слоты / опкоды" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=1;exitY=0.5;entryX=0;entryY=0.08;" edge="1" parent="1" source="ir" target="cu">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_branch" value="адрес перехода → младшие биты P&#10;(jump / call / next / if / -if)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=0;exitY=0.5;entryX=0.5;entryY=1;" edge="1" parent="1" source="ir" target="pc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="280" />
+              <mxPoint x="360" y="350" />
+              <mxPoint x="145" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_T_alu" value="T" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=1;exitY=0.25;entryX=0;entryY=0.3;" edge="1" parent="1" source="data_stack" target="alu">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_S_alu" value="S" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=1;exitY=0.55;entryX=0;entryY=0.7;" edge="1" parent="1" source="data_stack" target="alu">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_alu_T" value="result → T" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=0;exitY=0.85;entryX=0.5;entryY=1;" edge="1" parent="1" source="alu" target="data_stack">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="812" />
+              <mxPoint x="605" y="812" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_T_a" value="a!" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=0;exitY=0.2;entryX=1;entryY=0.5;" edge="1" parent="1" source="data_stack" target="rega">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="466" y="638" />
+              <mxPoint x="466" y="456" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_T_b" value="b!" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;fontSize=9;exitX=0;exitY=0.35;entryX=1;entryY=0.5;" edge="1" parent="1" source="data_stack" target="regb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="452" y="668" />
+              <mxPoint x="452" y="536" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_rs_p" value="call: P→R&#10;; / ex: R→P" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;startArrow=block;fontSize=9;exitX=0;exitY=0.2;entryX=0;entryY=0.6;" edge="1" parent="1" source="return_stack" target="pc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="58" y="760" />
+              <mxPoint x="58" y="285" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_rs_ds" value="push: T→R&#10;pop / r&gt;: R→T" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.6;endArrow=block;startArrow=block;fontSize=9;exitX=1;exitY=0.4;entryX=0;entryY=0.85;" edge="1" parent="1" source="return_stack" target="data_stack">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="790" />
+              <mxPoint x="400" y="762" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_alu_carry" value="carry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;fontSize=9;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="alu" target="carry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== CONTROL SIGNALS (dashed orange) ===================== -->
+        <mxCell id="c_rw" value="RE/WE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0.5;exitY=0;entryX=1;entryY=0.3;" edge="1" parent="1" source="cu" target="memory">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1305" y="100" />
+              <mxPoint x="980" y="100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_ild" value="i_ld" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0;exitY=0.04;entryX=1;entryY=0.18;" edge="1" parent="1" source="cu" target="ir">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1180" y="258" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_pld" value="p_inc / p_ld" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0;exitY=0.02;entryX=0.5;entryY=0;" edge="1" parent="1" source="cu" target="pc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1160" y="216" />
+              <mxPoint x="145" y="216" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_addrsel" value="addr_sel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0;exitY=0.62;entryX=0.5;entryY=0;" edge="1" parent="1" source="cu" target="addr_mux">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1160" y="585" />
+              <mxPoint x="180" y="585" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_ald" value="a_ld / a_inc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0;exitY=0.36;entryX=1;entryY=0.4;" edge="1" parent="1" source="cu" target="rega">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1160" y="445" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_bld" value="b_ld" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0;exitY=0.5;entryX=1;entryY=0.4;" edge="1" parent="1" source="cu" target="regb">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1140" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_aluop" value="alu_op" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0;exitY=0.83;entryX=1;entryY=0.5;" edge="1" parent="1" source="cu" target="alu">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1120" y="698" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_dsctl" value="ds push/pop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0.2;exitY=1;entryX=0.5;entryY=1;" edge="1" parent="1" source="cu" target="data_stack">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1242" y="826" />
+              <mxPoint x="605" y="826" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c_rsctl" value="rs push/pop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#d79b00;strokeWidth=1.4;dashed=1;endArrow=open;fontSize=9;fontColor=#b07d00;exitX=0.05;exitY=1;entryX=1;entryY=0.5;" edge="1" parent="1" source="cu" target="return_stack">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1210" y="808" />
+              <mxPoint x="300" y="808" />
+              <mxPoint x="300" y="805" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ===================== LEGEND ===================== -->
+        <mxCell id="legend" value="&lt;b&gt;Легенда&lt;/b&gt;&lt;br&gt;&lt;br&gt;&amp;#9632; синий — память&lt;br&gt;&amp;#9632; зелёный — регистры&lt;br&gt;&amp;#9632; фиолетовый — стеки&lt;br&gt;&amp;#9632; красный — ALU&lt;br&gt;&amp;#9632; оранжевый — control unit&lt;br&gt;&lt;br&gt;— синяя толстая = шина данных&lt;br&gt;- - оранжевая = управление&lt;br&gt;— тёмная = тракт данных" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#bbbbbb;fontSize=10;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="70" width="200" height="172" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== CYCLE NOTE ===================== -->
+        <mxCell id="cycle_info" value="&lt;b&gt;ЦИКЛ ВЫПОЛНЕНИЯ (асинхронный, без тактовой частоты):&lt;/b&gt;&lt;br&gt;&lt;br&gt;①&amp;nbsp;&lt;b&gt;Fetch:&lt;/b&gt; при исполнении из RAM слово mem[P] → I, затем P++. Через порт P НЕ инкрементируется.&lt;br&gt;②&amp;nbsp;&lt;b&gt;Slot-execute:&lt;/b&gt; 18-битное слово I исполняется послотно — 4 слота (5+5+5+3 бит).&lt;br&gt;③&amp;nbsp;&lt;b&gt;ALU:&lt;/b&gt; операции безадресные, операнды с вершины стека (T, S), результат → T.&lt;br&gt;④&amp;nbsp;&lt;b&gt;Данные:&lt;/b&gt; адрес из P / A / B → MUX → address bus; @ читает в T, ! пишет T в память.&lt;br&gt;⑤&amp;nbsp;&lt;b&gt;Переходы:&lt;/b&gt; jump/call/next/if/-if заменяют младшие биты P (в пределах «страницы»).&lt;br&gt;⑥&amp;nbsp;&lt;b&gt;Стек R:&lt;/b&gt; call → P→R; ; (return) → R→P; next/unext используют R как счётчик до 0." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fbfbfb;strokeColor=#999999;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="80" y="910" width="660" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- ===================== ISA REFERENCE ===================== -->
+        <mxCell id="isa" value="&lt;b&gt;СИСТЕМА КОМАНД F18A — 32 опкода (5 бит)&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Управление (8):&lt;/b&gt;&amp;nbsp; ;&amp;nbsp;(ret)&amp;nbsp;·&amp;nbsp; ex&amp;nbsp;·&amp;nbsp; jump&amp;nbsp;·&amp;nbsp; call&amp;nbsp;·&amp;nbsp; next&amp;nbsp;·&amp;nbsp; unext&amp;nbsp;·&amp;nbsp; if&amp;nbsp;(T=0)&amp;nbsp;·&amp;nbsp; -if&amp;nbsp;(T≥0)&lt;br&gt;&lt;br&gt;&lt;b&gt;Память (8):&lt;/b&gt;&amp;nbsp; @p&amp;nbsp;·&amp;nbsp; @+&amp;nbsp;·&amp;nbsp; @b&amp;nbsp;·&amp;nbsp; @&amp;nbsp;·&amp;nbsp; !p&amp;nbsp;·&amp;nbsp; !+&amp;nbsp;·&amp;nbsp; !b&amp;nbsp;·&amp;nbsp; !&amp;nbsp;&amp;nbsp;&lt;font color=&quot;#777777&quot;&gt;(p и + дают авто-инкремент)&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;ALU / стек (16):&lt;/b&gt;&amp;nbsp; +&amp;nbsp;·&amp;nbsp; - &lt;font color=&quot;#b85450&quot;&gt;(инверсия, НЕ вычитание)&lt;/font&gt;&amp;nbsp;·&amp;nbsp; and&amp;nbsp;·&amp;nbsp; or&amp;nbsp;&lt;font color=&quot;#b85450&quot;&gt;(= XOR!)&lt;/font&gt;&amp;nbsp;·&amp;nbsp; 2*&amp;nbsp;(сдвиг ←)&amp;nbsp;·&amp;nbsp; 2/&amp;nbsp;(сдвиг →)&amp;nbsp;·&amp;nbsp; +*&amp;nbsp;(шаг умн.)&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; dup&amp;nbsp;·&amp;nbsp; drop&amp;nbsp;·&amp;nbsp; over&amp;nbsp;·&amp;nbsp; push&amp;nbsp;(T→R)&amp;nbsp;·&amp;nbsp; pop&amp;nbsp;(R→T)&amp;nbsp;·&amp;nbsp; a&amp;nbsp;(A→T)&amp;nbsp;·&amp;nbsp; a!&amp;nbsp;·&amp;nbsp; b!&amp;nbsp;·&amp;nbsp; .&amp;nbsp;(nop)&lt;br&gt;&lt;br&gt;&lt;font color=&quot;#b85450&quot;&gt;&lt;b&gt;Внимание:&lt;/b&gt;&lt;/font&gt; нет swap; нет вычитания (через inv+1); &lt;b&gt;or&lt;/b&gt; = XOR; &lt;b&gt;-&lt;/b&gt; = инверсия; B только на запись; доступ к памяти только через P/A/B." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f7f7f7;strokeColor=#888888;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="760" y="820" width="700" height="290" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
